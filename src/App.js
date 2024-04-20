@@ -1,24 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Container, Typography, CircularProgress } from '@material-ui/core';
+import HoldingsTable from './components/HoldingsTable';
+import './App.css'; // Importing external CSS file
 
 function App() {
+  const [holdings, setHoldings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get('https://canopy-frontend-task.now.sh/api/holdings')
+      .then(response => {
+        setHoldings(response.data.payload);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className="app-container">
+      <Typography variant="h4" className="app-heading">
+      HireQuotient Assignment
+      <hr/>
+      </Typography>
+      {loading ? (
+        <div className="loading-container">
+          <CircularProgress />
+        </div>
+      ) : (
+        <HoldingsTable holdings={holdings} />
+      )}
+    </Container>
   );
 }
 
